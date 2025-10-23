@@ -5,10 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kids English Site - Lesson 1</title>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
   <style>
     body {
       font-family: "Comic Sans MS", sans-serif;
@@ -22,11 +18,6 @@
       padding: 15px;
       text-align: center;
       border-bottom: 3px solid #fbc02d;
-    }
-
-    header h1 {
-      margin: 0;
-      color: #333;
     }
 
     nav ul {
@@ -52,7 +43,6 @@
       border-radius: 20px;
       padding: 30px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      position: relative;
     }
 
     .draggable,
@@ -75,7 +65,6 @@
     }
 
     @media (max-width: 600px) {
-
       .draggable,
       .dropzone {
         width: 100px;
@@ -92,6 +81,7 @@
       border-radius: 10px;
       font-size: 1.1rem;
       cursor: pointer;
+      margin: 5px;
     }
 
     button:hover {
@@ -125,6 +115,25 @@
       color: red;
       font-weight: bold;
     }
+
+    table {
+      margin: 0 auto;
+      font-size: 1.2rem;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px 15px;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      width: 100px;
+    }
   </style>
 </head>
 
@@ -140,13 +149,16 @@
     </nav>
   </header>
 
+  <section style="text-align:center; margin-bottom:30px;">
+    <img src="imagenes/numbers.jpg" alt="Numbers 1 to 10" style="max-width: 100%; height:auto; border-radius: 15px; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+  </section>
+  <!-- Match the Numbers -->
   <section>
     <h2 style="text-align:center;">Match the Numbers 🎲</h2>
     <p style="text-align:center;">Drag or touch to match the words with numbers</p>
 
-    <div id="match-container" style="display:flex; flex-direction:column; align-items:center; gap:30px;">
-      <!-- Nombres arriba -->
-      <div id="names" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">
+    <div id="match-container" style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+      <div id="names" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
         <div class="draggable" data-number="1" style="background-color:#FFD700;">one</div>
         <div class="draggable" data-number="2" style="background-color:#FFA500;">two</div>
         <div class="draggable" data-number="3" style="background-color:#FF4500;">three</div>
@@ -159,8 +171,7 @@
         <div class="draggable" data-number="10" style="background-color:#FF6347;">ten</div>
       </div>
 
-      <!-- Números abajo -->
-      <div id="numbers" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">
+      <div id="numbers" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
         <div class="dropzone" data-number="1">1️⃣</div>
         <div class="dropzone" data-number="2">2️⃣</div>
         <div class="dropzone" data-number="3">3️⃣</div>
@@ -176,15 +187,43 @@
 
     <p id="result" style="text-align:center;margin-top:20px;"></p>
     <div style="text-align:center;margin-top:10px;">
-      <button onclick="resetDrag()">🔄 Reiniciar</button>
+      <button onclick="resetDrag()">🔄 Reset </button>
     </div>
   </section>
 
+  <!-- Write the Number -->
+  <section>
+    <h2 style="text-align:center;">Write the Number ✏️</h2>
+    <p style="text-align:center;">Write the name of the number in English</p>
 
+    <table id="writeNumbersTable">
+      <tbody>
+        <tr><td>1️⃣</td><td><input type="text" data-number="one"></td></tr>
+        <tr><td>2️⃣</td><td><input type="text" data-number="two"></td></tr>
+        <tr><td>3️⃣</td><td><input type="text" data-number="three"></td></tr>
+        <tr><td>4️⃣</td><td><input type="text" data-number="four"></td></tr>
+        <tr><td>5️⃣</td><td><input type="text" data-number="five"></td></tr>
+        <tr><td>6️⃣</td><td><input type="text" data-number="six"></td></tr>
+        <tr><td>7️⃣</td><td><input type="text" data-number="seven"></td></tr>
+        <tr><td>8️⃣</td><td><input type="text" data-number="eight"></td></tr>
+        <tr><td>9️⃣</td><td><input type="text" data-number="nine"></td></tr>
+        <tr><td>🔟</td><td><input type="text" data-number="ten"></td></tr>
+      </tbody>
+    </table>
+
+    <div style="text-align:center; margin-top:15px;">
+      <button onclick="checkAnswers()">✅ Check Answers</button>
+      <button onclick="resetWrite()">🔄 Reset </button>
+    </div>
+
+    <p id="writeResult" style="text-align:center; margin-top:15px; font-weight:bold;"></p>
+  </section>
+
+  <!-- Modal -->
   <div id="errorModal">
     <div id="errorModalContent">
       <p id="errorText"></p>
-      <button onclick="closeModal()">Cerrar</button>
+      <button onclick="closeModal()">Close</button>
     </div>
   </div>
 
@@ -203,27 +242,21 @@
       const draggables = document.querySelectorAll('.draggable');
       const dropzones = document.querySelectorAll('.dropzone');
 
-      // Mapeos palabra -> numero
       const wordToNum = {
         "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
-        "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10",
-        // en caso aparezcan en español por error:
-        "uno": "1", "dos": "2", "tres": "3", "cuatro": "4", "cinco": "5",
-        "seis": "6", "siete": "7", "ocho": "8", "nueve": "9", "diez": "10"
+        "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10"
       };
 
-      // Mapa para mostrar emoji al resetear
       const emojiMap = {
         "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣",
         "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣", "10": "🔟"
       };
 
-      // --- Desktop (drag & drop)
+      // Desktop drag & drop
       draggables.forEach(d => {
         d.draggable = true;
         d.addEventListener('dragstart', e => {
-          // guardamos en dataTransfer la representación numérica (si es posible)
-          let val = normalizeToNumber(d.dataset.number || d.textContent);
+          let val = d.dataset.number;
           try { e.dataTransfer.setData('text', val); } catch (err) { }
         });
       });
@@ -232,125 +265,80 @@
         dz.addEventListener('dragover', e => e.preventDefault());
         dz.addEventListener('drop', e => {
           e.preventDefault();
-          const data = e.dataTransfer.getData ? e.dataTransfer.getData('text') : null;
-          const draggedNumber = normalizeToNumber(data);
+          const draggedNumber = e.dataTransfer.getData('text');
           handleDrop(draggedNumber, dz);
         });
       });
 
-      // --- Mobile (touch) implementation
+      // Mobile touch
       let currentDragged = null;
       draggables.forEach(d => {
         d.addEventListener('touchstart', e => {
           currentDragged = d;
           d.style.opacity = '0.6';
         }, { passive: true });
-
         d.addEventListener('touchmove', e => {
-          // visual feedback: destacamos la dropzone bajo el dedo
           const touch = e.touches[0];
           const el = document.elementFromPoint(touch.clientX, touch.clientY);
           dropzones.forEach(z => z.style.outline = '');
           const dz = el ? el.closest('.dropzone') : null;
           if (dz) dz.style.outline = '3px dashed orange';
         }, { passive: true });
-
         d.addEventListener('touchend', e => {
           d.style.opacity = '1';
           const touch = e.changedTouches[0];
           const el = document.elementFromPoint(touch.clientX, touch.clientY);
           const dz = el ? el.closest('.dropzone') : null;
-          if (dz) {
-            const draggedNumber = normalizeToNumber(currentDragged.dataset.number || currentDragged.textContent);
-            handleDrop(draggedNumber, dz);
-          }
+          if (dz) handleDrop(currentDragged.dataset.number, dz);
           dropzones.forEach(z => z.style.outline = '');
           currentDragged = null;
         }, { passive: true });
       });
 
-      // Normaliza cualquier entrada a número-string "1".."10"
-      function normalizeToNumber(value) {
-        if (!value && value !== 0) return null;
-        value = String(value).trim().toLowerCase();
-
-        // ya es un dígito "1", "2", o "10"
-        if (/^\d+$/.test(value)) return value;
-
-        // si es palabra en inglés o español
-        if (wordToNum[value]) return wordToNum[value];
-
-        // si contiene la palabra (por ejemplo data-number="one " o textContent "one")
-        // intentamos extraer una palabra conocida
-        for (const key in wordToNum) {
-          if (value.includes(key)) return wordToNum[key];
-        }
-
-        return null;
-      }
-
       function handleDrop(number, dz) {
-        if (!number) {
-          showModal("❗ No se pudo identificar el número arrastrado.");
-          return;
-        }
-
-        const targetNum = normalizeToNumber(dz.dataset.number);
-        if (!targetNum) {
-          showModal("❗ La zona objetivo no está bien configurada (data-number).");
-          return;
-        }
-
-        if (number === targetNum) {
-          dz.textContent = (emojiMap[targetNum] || targetNum) + " ✅";
+        if (!number) { showModal("No se pudo identificar el número."); return; }
+        if (number === dz.dataset.number) {
+          dz.textContent = emojiMap[number] + " ✅";
           dz.style.backgroundColor = "#c8f7c5";
-
-          // ocultamos el draggable correcto: primero por data-number numérico, luego por palabra
-          let draggedEl = document.querySelector(`.draggable[data-number='${targetNum}']`);
-          if (!draggedEl) {
-            // puede que el draggable tenga data-number="one" etc. buscamos por palabra
-            for (const [word, num] of Object.entries(wordToNum)) {
-              if (num === targetNum) {
-                draggedEl = document.querySelector(`.draggable[data-number='${word}']`);
-                if (draggedEl) break;
-              }
-            }
-          }
+          const draggedEl = document.querySelector(`.draggable[data-number='${number}']`);
           if (draggedEl) draggedEl.style.display = 'none';
         } else {
           showModal("❌ Vuelve a intentarlo!!");
         }
 
-        // comprobar si quedó alguno visible
-        const remaining = document.querySelectorAll('.draggable:not([style*=\"display: none\"])');
-        if (remaining.length === 0) {
-          document.getElementById('result').textContent = "🎉 ¡Muy bien! Todos los números están correctos 🎉";
-        }
+        const remaining = document.querySelectorAll('.draggable:not([style*="display: none"])');
+        if (remaining.length === 0) document.getElementById('result').textContent = "🎉 ¡Muy bien! Todos los números están correctos 🎉";
       }
 
-      // Función para resetear (si la necesitas)
+      // Reset Drag
       window.resetDrag = function () {
-        const draggables2 = document.querySelectorAll('.draggable');
-        const dropzones2 = document.querySelectorAll('.dropzone');
-
-        draggables2.forEach(d => {
-          d.style.display = 'flex';
-          d.style.opacity = '';
-        });
-
-        dropzones2.forEach(dz => {
-          const t = normalizeToNumber(dz.dataset.number);
-          dz.style.backgroundColor = '';
-          dz.textContent = emojiMap[t] || (dz.dataset.number || '');
-          dz.style.outline = '';
-        });
-
+        draggables.forEach(d => { d.style.display = 'flex'; d.style.opacity = ''; });
+        dropzones.forEach(dz => { dz.textContent = emojiMap[dz.dataset.number]; dz.style.backgroundColor = ''; dz.style.outline = ''; });
         document.getElementById('result').textContent = '';
       };
 
-    }); // DOMContentLoaded
-  </script>
+      // Write the Number
+      window.checkAnswers = function () {
+        const inputs = document.querySelectorAll('#writeNumbersTable input');
+        let allCorrect = true;
+        inputs.forEach(input => {
+          const correct = input.dataset.number.toLowerCase();
+          const value = input.value.trim().toLowerCase();
+          if (value === correct) input.style.backgroundColor = '#c8f7c5';
+          else { input.style.backgroundColor = '#f7c5c5'; allCorrect = false; }
+        });
+        const result = document.getElementById('writeResult');
+        result.textContent = allCorrect ? "🎉 ¡Muy bien! Todos correctos 🎉" : "❌ Revisa los errores y vuelve a intentarlo.";
+      };
 
+      window.resetWrite = function () {
+        document.querySelectorAll('#writeNumbersTable input').forEach(input => { input.value = ''; input.style.backgroundColor = ''; });
+        document.getElementById('writeResult').textContent = '';
+      };
+
+    });
+  </script>
 </body>
 
 </html>
+
