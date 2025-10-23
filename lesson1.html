@@ -5,6 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kids English Site - Lesson 1</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <style>
     body {
       font-family: "Comic Sans MS", sans-serif;
@@ -18,6 +22,11 @@
       padding: 15px;
       text-align: center;
       border-bottom: 3px solid #fbc02d;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #333;
     }
 
     nav ul {
@@ -43,6 +52,7 @@
       border-radius: 20px;
       padding: 30px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      position: relative;
     }
 
     .draggable,
@@ -81,7 +91,6 @@
       border-radius: 10px;
       font-size: 1.1rem;
       cursor: pointer;
-      margin: 5px;
     }
 
     button:hover {
@@ -115,25 +124,6 @@
       color: red;
       font-weight: bold;
     }
-
-    table {
-      margin: 0 auto;
-      font-size: 1.2rem;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 10px 15px;
-    }
-
-    input[type="text"] {
-      padding: 8px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 2px solid #ccc;
-      width: 100px;
-    }
   </style>
 </head>
 
@@ -149,16 +139,15 @@
     </nav>
   </header>
 
-  <section style="text-align:center; margin-bottom:30px;">
-    <img src="imagenes/numbers.jpg" alt="Numbers 1 to 10" style="max-width: 100%; height:auto; border-radius: 15px; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
-  </section>
   <!-- Match the Numbers -->
   <section>
+    <img src="imagenes\numbers.jpg" alt="Lesson 1" style="display:block; margin:0 auto 20px auto; max-width:100%; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+
     <h2 style="text-align:center;">Match the Numbers 🎲</h2>
     <p style="text-align:center;">Drag or touch to match the words with numbers</p>
 
-    <div id="match-container" style="display:flex; flex-direction:column; align-items:center; gap:20px;">
-      <div id="names" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
+    <div id="match-container" style="display:flex; flex-direction:column; align-items:center; gap:30px;">
+      <div id="names" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">
         <div class="draggable" data-number="1" style="background-color:#FFD700;">one</div>
         <div class="draggable" data-number="2" style="background-color:#FFA500;">two</div>
         <div class="draggable" data-number="3" style="background-color:#FF4500;">three</div>
@@ -171,7 +160,7 @@
         <div class="draggable" data-number="10" style="background-color:#FF6347;">ten</div>
       </div>
 
-      <div id="numbers" style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
+      <div id="numbers" style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">
         <div class="dropzone" data-number="1">1️⃣</div>
         <div class="dropzone" data-number="2">2️⃣</div>
         <div class="dropzone" data-number="3">3️⃣</div>
@@ -187,7 +176,7 @@
 
     <p id="result" style="text-align:center;margin-top:20px;"></p>
     <div style="text-align:center;margin-top:10px;">
-      <button onclick="resetDrag()">🔄 Reset </button>
+      <button onclick="resetDrag()">🔄 Reset Match</button>
     </div>
   </section>
 
@@ -196,30 +185,37 @@
     <h2 style="text-align:center;">Write the Number ✏️</h2>
     <p style="text-align:center;">Write the name of the number in English</p>
 
-    <table id="writeNumbersTable">
-      <tbody>
-        <tr><td>1️⃣</td><td><input type="text" data-number="one"></td></tr>
-        <tr><td>2️⃣</td><td><input type="text" data-number="two"></td></tr>
-        <tr><td>3️⃣</td><td><input type="text" data-number="three"></td></tr>
-        <tr><td>4️⃣</td><td><input type="text" data-number="four"></td></tr>
-        <tr><td>5️⃣</td><td><input type="text" data-number="five"></td></tr>
-        <tr><td>6️⃣</td><td><input type="text" data-number="six"></td></tr>
-        <tr><td>7️⃣</td><td><input type="text" data-number="seven"></td></tr>
-        <tr><td>8️⃣</td><td><input type="text" data-number="eight"></td></tr>
-        <tr><td>9️⃣</td><td><input type="text" data-number="nine"></td></tr>
-        <tr><td>🔟</td><td><input type="text" data-number="ten"></td></tr>
-      </tbody>
-    </table>
-
-    <div style="text-align:center; margin-top:15px;">
-      <button onclick="checkAnswers()">✅ Check Answers</button>
-      <button onclick="resetWrite()">🔄 Reset </button>
+    <div style="display:flex; justify-content:center; margin-top:20px;">
+      <table>
+        <thead>
+          <tr style="background-color:#f0f0f0;">
+            <th>Number</th>
+            <th>Write its name</th>
+          </tr>
+        </thead>
+        <tbody id="writeNumbersTable">
+          <tr><td>1️⃣</td><td><input type="text" data-number="one"></td></tr>
+          <tr><td>2️⃣</td><td><input type="text" data-number="two"></td></tr>
+          <tr><td>3️⃣</td><td><input type="text" data-number="three"></td></tr>
+          <tr><td>4️⃣</td><td><input type="text" data-number="four"></td></tr>
+          <tr><td>5️⃣</td><td><input type="text" data-number="five"></td></tr>
+          <tr><td>6️⃣</td><td><input type="text" data-number="six"></td></tr>
+          <tr><td>7️⃣</td><td><input type="text" data-number="seven"></td></tr>
+          <tr><td>8️⃣</td><td><input type="text" data-number="eight"></td></tr>
+          <tr><td>9️⃣</td><td><input type="text" data-number="nine"></td></tr>
+          <tr><td>🔟</td><td><input type="text" data-number="ten"></td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <p id="writeResult" style="text-align:center; margin-top:15px; font-weight:bold;"></p>
+    <div style="text-align:center; margin-top:15px;">
+      <button onclick="checkAnswers()">Check Answers ✅</button>
+      <button onclick="resetWrite()">🔄 Reset Write</button>
+    </div>
+
+    <p id="writeResult" style="text-align:center; margin-top:15px;"></p>
   </section>
 
-  <!-- Modal -->
   <div id="errorModal">
     <div id="errorModalContent">
       <p id="errorText"></p>
@@ -234,19 +230,11 @@
       document.getElementById('errorText').textContent = msg;
       modal.style.display = 'flex';
     }
-    function closeModal() {
-      document.getElementById('errorModal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('errorModal').style.display = 'none'; }
 
     document.addEventListener('DOMContentLoaded', () => {
       const draggables = document.querySelectorAll('.draggable');
       const dropzones = document.querySelectorAll('.dropzone');
-
-      const wordToNum = {
-        "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
-        "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10"
-      };
-
       const emojiMap = {
         "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣",
         "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣", "10": "🔟"
@@ -256,27 +244,22 @@
       draggables.forEach(d => {
         d.draggable = true;
         d.addEventListener('dragstart', e => {
-          let val = d.dataset.number;
-          try { e.dataTransfer.setData('text', val); } catch (err) { }
+          e.dataTransfer.setData('text', d.dataset.number);
         });
       });
-
       dropzones.forEach(dz => {
         dz.addEventListener('dragover', e => e.preventDefault());
         dz.addEventListener('drop', e => {
           e.preventDefault();
-          const draggedNumber = e.dataTransfer.getData('text');
-          handleDrop(draggedNumber, dz);
+          const data = e.dataTransfer.getData('text');
+          handleDrop(data, dz);
         });
       });
 
       // Mobile touch
       let currentDragged = null;
       draggables.forEach(d => {
-        d.addEventListener('touchstart', e => {
-          currentDragged = d;
-          d.style.opacity = '0.6';
-        }, { passive: true });
+        d.addEventListener('touchstart', e => { currentDragged = d; d.style.opacity = '0.6'; }, { passive: true });
         d.addEventListener('touchmove', e => {
           const touch = e.touches[0];
           const el = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -296,49 +279,44 @@
       });
 
       function handleDrop(number, dz) {
-        if (!number) { showModal("No se pudo identificar el número."); return; }
         if (number === dz.dataset.number) {
           dz.textContent = emojiMap[number] + " ✅";
           dz.style.backgroundColor = "#c8f7c5";
-          const draggedEl = document.querySelector(`.draggable[data-number='${number}']`);
+          const draggedEl = Array.from(draggables).find(d => d.dataset.number === number);
           if (draggedEl) draggedEl.style.display = 'none';
         } else {
-          showModal("❌ Vuelve a intentarlo!!");
+          showModal("❌ Try again!");
         }
-
-        const remaining = document.querySelectorAll('.draggable:not([style*="display: none"])');
-        if (remaining.length === 0) document.getElementById('result').textContent = "🎉 ¡Muy bien! Todos los números están correctos 🎉";
+        if ([...draggables].every(d => d.style.display === 'none')) {
+          document.getElementById('result').textContent = "🎉 Great! All numbers matched! 🎉";
+        }
       }
 
-      // Reset Drag
       window.resetDrag = function () {
         draggables.forEach(d => { d.style.display = 'flex'; d.style.opacity = ''; });
-        dropzones.forEach(dz => { dz.textContent = emojiMap[dz.dataset.number]; dz.style.backgroundColor = ''; dz.style.outline = ''; });
+        dropzones.forEach(dz => { dz.style.backgroundColor = ''; dz.textContent = emojiMap[dz.dataset.number]; dz.style.outline = ''; });
         document.getElementById('result').textContent = '';
       };
 
-      // Write the Number
       window.checkAnswers = function () {
-        const inputs = document.querySelectorAll('#writeNumbersTable input');
-        let allCorrect = true;
-        inputs.forEach(input => {
+        let score = 0;
+        const rows = document.querySelectorAll('#writeNumbersTable tr');
+        rows.forEach(r => {
+          const input = r.querySelector('input');
           const correct = input.dataset.number.toLowerCase();
-          const value = input.value.trim().toLowerCase();
-          if (value === correct) input.style.backgroundColor = '#c8f7c5';
-          else { input.style.backgroundColor = '#f7c5c5'; allCorrect = false; }
+          if (input.value.trim().toLowerCase() === correct) {
+            input.style.backgroundColor = '#c8f7c5';
+            score++;
+          } else input.style.backgroundColor = '#f8d7da';
         });
-        const result = document.getElementById('writeResult');
-        result.textContent = allCorrect ? "🎉 ¡Muy bien! Todos correctos 🎉" : "❌ Revisa los errores y vuelve a intentarlo.";
+        document.getElementById('writeResult').textContent = `You got ${score} / 10 correct!`;
       };
 
       window.resetWrite = function () {
-        document.querySelectorAll('#writeNumbersTable input').forEach(input => { input.value = ''; input.style.backgroundColor = ''; });
+        document.querySelectorAll('#writeNumbersTable input').forEach(i => { i.value = ''; i.style.backgroundColor = ''; });
         document.getElementById('writeResult').textContent = '';
       };
-
     });
   </script>
 </body>
-
 </html>
-
