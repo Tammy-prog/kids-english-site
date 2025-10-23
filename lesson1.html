@@ -72,6 +72,7 @@
     }
 
     @media (max-width: 600px) {
+
       .draggable,
       .dropzone {
         width: 100px;
@@ -192,71 +193,158 @@
       document.getElementById('errorModal').style.display = 'none';
     }
 
-    // Función principal
     document.addEventListener('DOMContentLoaded', () => {
       const draggables = document.querySelectorAll('.draggable');
       const dropzones = document.querySelectorAll('.dropzone');
 
+      // Mapeos palabra -> numero
+      const wordToNum = {
+        "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
+        "six": "6", "seven": "7", "eight": "8", "nine": "9", "ten": "10",
+        // en caso aparezcan en español por error:
+        "uno": "1", "dos": "2", "tres": "3", "cuatro": "4", "cinco": "5",
+        "seis": "6", "siete": "7", "ocho": "8", "nueve": "9", "diez": "10"
+      };
+
+      // Mapa para mostrar emoji al resetear
+      const emojiMap = {
+        "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣",
+        "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣", "10": "🔟"
+      };
+
       // --- Desktop (drag & drop)
       draggables.forEach(d => {
         d.draggable = true;
-        d.addEventListener('dragstart', e => e.dataTransfer.setData('text', d.dataset.number));
+        d.addEventListener('dragstart', e => {
+          // guardamos en dataTransfer la representación numérica (si es posible)
+          let val = normalizeToNumber(d.dataset.number || d.textContent);
+          try { e.dataTransfer.setData('text', val); } catch (err) { }
+        });
       });
 
       dropzones.forEach(dz => {
         dz.addEventListener('dragover', e => e.preventDefault());
-        dz.addEventListener('drop', e => handleDrop(e.dataTransfer.getData('text'), dz));
+        dz.addEventListener('drop', e => {
+          e.preventDefault();
+          const data = e.dataTransfer.getData ? e.dataTransfer.getData('text') : null;
+          const draggedNumber = normalizeToNumber(data);
+          handleDrop(draggedNumber, dz);
+        });
       });
 
-      // --- Mobile (touch)
-      draggables.forEach(d => {
-        d.addEventListener('touchstart', handleTouchStart, { passive: false });
-        d.addEventListener('touchmove', handleTouchMove, { passive: false });
-        d.addEventListener('touchend', handleTouchEnd);
-      });
-
+      // --- Mobile (touch) implementation
       let currentDragged = null;
+      draggables.forEach(d => {
+        d.addEventListener('touchstart', e => {
+          currentDragged = d;
+          d.style.opacity = '0.6';
+        }, { passive: true });
 
-      function handleTouchStart(e) {
-        currentDragged = e.target;
-        currentDragged.style.opacity = '0.6';
-      }
+        d.addEventListener('touchmove', e => {
+          // visual feedback: destacamos la dropzone bajo el dedo
+          const touch = e.touches[0];
+          const el = document.elementFromPoint(touch.clientX, touch.clientY);
+          dropzones.forEach(z => z.style.outline = '');
+          const dz = el ? el.closest('.dropzone') : null;
+          if (dz) dz.style.outline = '3px dashed orange';
+        }, { passive: true });
 
-      function handleTouchMove(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
-        const dz = elem?.closest('.dropzone');
-        dropzones.forEach(d => d.style.outline = '');
-        if (dz) dz.style.outline = '3px dashed orange';
-      }
+        d.addEventListener('touchend', e => {
+          d.style.opacity = '1';
+          const touch = e.changedTouches[0];
+          const el = document.elementFromPoint(touch.clientX, touch.clientY);
+          const dz = el ? el.closest('.dropzone') : null;
+          if (dz) {
+            const draggedNumber = normalizeToNumber(currentDragged.dataset.number || currentDragged.textContent);
+            handleDrop(draggedNumber, dz);
+          }
+          dropzones.forEach(z => z.style.outline = '');
+          currentDragged = null;
+        }, { passive: true });
+      });
 
-      function handleTouchEnd(e) {
-        currentDragged.style.opacity = '1';
-        const touch = e.changedTouches[0];
-        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
-        const dz = elem?.closest('.dropzone');
-        if (dz) handleDrop(currentDragged.dataset.number, dz);
-        dropzones.forEach(d => d.style.outline = '');
-        currentDragged = null;
+      // Normaliza cualquier entrada a número-string "1".."10"
+      function normalizeToNumber(value) {
+        if (!value && value !== 0) return null;
+        value = String(value).trim().toLowerCase();
+
+        // ya es un dígito "1", "2", o "10"
+        if (/^\d+$/.test(value)) return value;
+
+        // si es palabra en inglés o español
+        if (wordToNum[value]) return wordToNum[value];
+
+        // si contiene la palabra (por ejemplo data-number="one " o textContent "one")
+        // intentamos extraer una palabra conocida
+        for (const key in wordToNum) {
+          if (value.includes(key)) return wordToNum[key];
+        }
+
+        return null;
       }
 
       function handleDrop(number, dz) {
-        if (number === dz.dataset.number) {
-          dz.textContent = dz.dataset.number + " ✅";
+        if (!number) {
+          showModal("❗ No se pudo identificar el número arrastrado.");
+          return;
+        }
+
+        const targetNum = normalizeToNumber(dz.dataset.number);
+        if (!targetNum) {
+          showModal("❗ La zona objetivo no está bien configurada (data-number).");
+          return;
+        }
+
+        if (number === targetNum) {
+          dz.textContent = (emojiMap[targetNum] || targetNum) + " ✅";
           dz.style.backgroundColor = "#c8f7c5";
-          const dragged = document.querySelector(`.draggable[data-number='${number}']`);
-          dragged.style.display = "none";
+
+          // ocultamos el draggable correcto: primero por data-number numérico, luego por palabra
+          let draggedEl = document.querySelector(`.draggable[data-number='${targetNum}']`);
+          if (!draggedEl) {
+            // puede que el draggable tenga data-number="one" etc. buscamos por palabra
+            for (const [word, num] of Object.entries(wordToNum)) {
+              if (num === targetNum) {
+                draggedEl = document.querySelector(`.draggable[data-number='${word}']`);
+                if (draggedEl) break;
+              }
+            }
+          }
+          if (draggedEl) draggedEl.style.display = 'none';
         } else {
           showModal("❌ Vuelve a intentarlo!!");
         }
 
-        const remaining = document.querySelectorAll('.draggable:not([style*="display: none"])');
+        // comprobar si quedó alguno visible
+        const remaining = document.querySelectorAll('.draggable:not([style*=\"display: none\"])');
         if (remaining.length === 0) {
           document.getElementById('result').textContent = "🎉 ¡Muy bien! Todos los números están correctos 🎉";
         }
       }
-    });
+
+      // Función para resetear (si la necesitas)
+      window.resetDrag = function () {
+        const draggables2 = document.querySelectorAll('.draggable');
+        const dropzones2 = document.querySelectorAll('.dropzone');
+
+        draggables2.forEach(d => {
+          d.style.display = 'flex';
+          d.style.opacity = '';
+        });
+
+        dropzones2.forEach(dz => {
+          const t = normalizeToNumber(dz.dataset.number);
+          dz.style.backgroundColor = '';
+          dz.textContent = emojiMap[t] || (dz.dataset.number || '');
+          dz.style.outline = '';
+        });
+
+        document.getElementById('result').textContent = '';
+      };
+
+    }); // DOMContentLoaded
   </script>
+
 </body>
+
 </html>
